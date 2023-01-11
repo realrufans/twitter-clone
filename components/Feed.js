@@ -1,5 +1,5 @@
 import { StarIcon, XIcon } from "@heroicons/react/outline";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SiderBar from "./SideBar";
 import SiderLink from "./SiderLink";
 
@@ -15,17 +15,38 @@ import {
   UserCircleIcon,
   UsersIcon,
 } from "@heroicons/react/outline";
-import Input from "./input";
+import Input from "./Input";
+import Post from "./post";
+import { db } from "../firebase";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { Oval, Audio } from "react-loader-spinner";
 
 function Feed() {
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [posts, setPosts] = useState([]);
+
+
+  useEffect(
+
+
+    () =>
+      onSnapshot(
+        query(collection(db, "posts"), orderBy("timeStamp", "desc")),
+        (snapshot) => {
+          setPosts(snapshot.docs);
+        }
+      ),
+    [db]
+  );
+
+  console.log(posts)
+
   return (
     <div
-      className={`${
-        mobileMenu && " bg-black-400/[0.4]"
-      } overflow-y-scroll flex-grow text-white border-b-[1px] border-gray-500    bg-black  sm:ml-[100px]    xl:ml-[250px]`}
+      className={`${mobileMenu && " bg-black-400/[0.4]"
+        } overflow-y-scroll scrollbar-hide border-r-[0.1px] flex-grow text-white border-b-[1px] border-gray-800 max-w-[38rem]   bg-black  sm:ml-[100px]  h-screen   xl:ml-[350px]`}
     >
-      <div className="static flex justify-between  p-5 items-center ">
+      <div className=" flex justify-between    max-w-2xl w-full bg-black z-50 sm:max-w-[40rem] top-0 p-5 items-center ">
         <div className=" inline-flex space-x-5 items-center">
           {" "}
           <img
@@ -40,7 +61,7 @@ function Feed() {
 
       {/* Menu view */}
       {mobileMenu && (
-        <div className="absolute left-0 top-0 w-[250px] bg-black z-50 h-full border-r-[1px] border-gray-500 sm:hidden  p-5">
+        <div className="absolute left-0 top-0 w-[250px] bg-black z-50 h-full border-r-[1px] border-gray-800 sm:hidden  p-5">
           <div className=" flex justify-between mb-5">
             {" "}
             <h1 className=" text-lg">Account info</h1>{" "}
@@ -78,7 +99,24 @@ function Feed() {
         className="h-14 absolute right-0 bottom-5 mr-5 rounded-full sm:hidden   bg-white"
         src="/images/tweetbutton.png"
       /> */}
+
       <Input />
+
+      {posts.length > 0 ? (
+        <div className="mt-20 ">
+          {posts.map((post) => {
+            return <Post key={post.id} id={post.id} post={post.data()} />;
+          })}
+        </div>
+      ) : (
+        <div className="relative">
+          {" "}
+          <div className=" absolute  left-[40%] top-10 text-blue-300 ">
+          <Oval className='h-5   '/>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -6,17 +6,21 @@ import {
   BookmarkIcon,
   ClipboardListIcon,
   DotsCircleHorizontalIcon,
-  DotsHorizontalIcon,
   HashtagIcon,
   HomeIcon,
   InboxIcon,
   UserCircleIcon,
-  UsersIcon,
+
 } from "@heroicons/react/outline";
+import { signOut, useSession } from "next-auth/react";
+
+
 
 function SiderBar() {
+  const { data: session } = useSession()
+ 
   return (
-    <div className="w-[100px]   min-h-screen  lg:w-[90px] xl:w-[250px]  hidden sm:flex flex-col justify-between p-3   border-r-2 border-gray-500  fixed top-0 bottom-0  scrollbar-hide sm:overflow-y-scroll xl:overflow-y-hidden ">
+    <div className="w-[100px]   min-h-screen  lg:w-[90px] xl:w-[350px]  hidden sm:flex flex-col justify-between p-3   border-r-2 border-gray-800  fixed top-0 bottom-0  scrollbar-hide sm:overflow-y-scroll xl:overflow-y-hidden ">
       <div className="  ">
         <div className="cursor-pointer ml-4">
           <Image height={30} width={30} src="/images/twitter.png" />
@@ -40,14 +44,14 @@ function SiderBar() {
           src="/images/tweetbutton.png"
         />
       </div>
-      <div className="hoverAnimation self-center xl:self-start  text-white flex space-x-5 mt-3  ">
+      <div className="hoverAnimation self-center xl:self-start  text-white flex space-x-5 mt-3" onClick={() => signOut()}>
         <img
-          src="https://pbs.twimg.com/profile_images/1211322796883808256/-Ck0zxIf_400x400.jpg"
+          src={session.user.image}
           className=" max-w-xs h-10 rounded-full "
         />
         <div className="hidden xl:block">
-          <h1>Solomon Stephen</h1>
-          <p>@reaslrufans22</p>
+          <h1>{session.user.name}</h1>
+          <p>@{session.user.tag}</p>
         </div>
       </div>
     </div>
